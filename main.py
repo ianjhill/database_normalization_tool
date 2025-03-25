@@ -29,11 +29,38 @@ def get_fds_primarykeys():
     Asks the user for primary keys and functional dependencies
     of the dataset and returns them.
     """
-
+    func_deps = []
     fds = input("Please enter the functional dependencies (separated by comma) (A->B,C->D)").split(',')
+    for fd in fds:
+        lhs, rhs = fd.split('->')
+        func_deps.append(([lhs.strip()], rhs.strip()))
     primary_keys = input("Please enter the primary keys (separated by comma): ").split(',')
 
     return fds, primary_keys
+
+
+def compute_closure(attributes, fds):
+    """
+    This function computes the closure of a set of attributes utilizing 
+    specified functional dependencies.
+    """
+    closure = set(attributes)
+    changed = True
+    while changed:
+        changed = False
+        for lhs, rhs in fds:
+            if set(lhs).issubset(closure) and rhs not in closure:
+                closure.add(rhs)
+                changed = True
+    return closure
+
+
+
+
+
+
+
+
 
 
 def check_1NF(df):
@@ -56,12 +83,17 @@ def check_1NF(df):
 
 
 def check_2NF(df):
-    
+
 
 
 def main():
     dataframe = showcase_csv_format()
+    attributes = dataframe.columns()
+
     func_deps, primary_keys = get_fds_primarykeys()
+
+    closure = compute_closure(attributes, func_deps)
+
 
 
 
