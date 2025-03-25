@@ -8,7 +8,8 @@ def showcase_csv_format():
     of the csv file.
     """
     file_path = input("Please enter the file name: ")
-    df = pd.read_csv(file_path)
+    # CHANGE TO file_path 
+    df = pd.read_csv('/Users/ianhill/Desktop/cmps664/python_code/database_normalization_tool/people-100.csv')
 
     print("\n-- CSV FILE INFORMATION --")
     print(f"Number of rows: {df.shape[0]}")
@@ -18,7 +19,7 @@ def showcase_csv_format():
     print(df.head(), "\n")
 
     print("-- ATTRIBUTE DATA TYPES --")
-    print(df.types)
+    print(df.dtypes, "\n")
 
     return df
 
@@ -33,6 +34,29 @@ def get_fds_primarykeys():
     primary_keys = input("Please enter the primary keys (separated by comma): ").split(',')
 
     return fds, primary_keys
+
+
+def check_1NF(df):
+    delimiters = [',', ';', '|', '/']
+    print("Checking 1NF\n")
+
+    for col in df.select_dtypes(include='object'):
+        # Create a regex pattern to match any of the delimiters
+        pattern = '|'.join([f'\\{d}' for d in delimiters])
+        # Check if any values contain multi-values
+        has_multivalued = df[col].astype(str).str.contains(pattern, na=False)
+        if has_multivalued.any():
+            print(f"Column '{col}' contains multi-valued entries. Cleaning...")
+
+            # Keep only the first value before the first delimiter
+            df[col] = df[col].astype(str).str.split(pattern).str[0].str.strip()
+
+    print("Already in 1NF (No multi-valued attributes).")
+    return df
+
+
+def check_2NF(df):
+    
 
 
 def main():
