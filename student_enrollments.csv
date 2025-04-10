@@ -1,0 +1,7 @@
+StudentID,Name,Email,CourseID,CourseName,Credits,Grade
+1001,Alice Smith,alice@example.com,CSE101,Intro to CS,3,A
+1002,Bob Jones,bob@example.com,CSE101,Intro to CS,3,B+
+1001,Alice Smith,alice@example.com,MATH201,Calculus I,4,A-
+1003,Carol Li,carol@example.com,CSE101,Intro to CS,3,A
+1002,Bob Jones,bob@example.com,MATH201,Calculus I,4,B
+1003,Carol Li,carol@example.com,ENG101,English Lit,3,B+
