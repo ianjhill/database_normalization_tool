@@ -383,7 +383,7 @@ def connect_and_execute_mysql_script(
         user=user,
         password=password
     )
-    mycursor = mydbase.cursor()
+    mycursor = mydbase.mycursor()
 
     # Create new database
     mycursor.execute(f"DROP DATABASE IF EXISTS {database_name}")
@@ -448,13 +448,13 @@ def interactive_query_interface(
     This function creates a query interface for the user to insert, update, delete
     and create custom queries for further analysis from.
     """
-    conn = mysql.connector.connect(
+    mydbase = mysql.connector.connect(
         host=host,
         user=user,
         password=password,
         database=database
     )
-    cursor = conn.cursor()
+    mycursor = mydbase.cursor()
     print(f"\nConnected to database `{database}`.\n")
 
     while True:
@@ -479,20 +479,20 @@ def interactive_query_interface(
             elif choice == '2':
                 table = input("Table to update: ").strip()
                 set_clause = input("SET clause (e.g., Name = 'Alice'): ").strip()
-                where_clause = input("WHERE clause (e.g., ID = 1): ").strip()
+                where_clause = input("WHERE clause (e.g., ID = '1'): ").strip()
                 query = f"UPDATE {table} SET {set_clause} WHERE {where_clause};"
 
             elif choice == '3':
                 table = input("Table to delete from: ").strip()
-                where_clause = input("WHERE clause (e.g., ID = 1): ").strip()
+                where_clause = input("WHERE clause (e.g., ID = '1'): ").strip()
                 query = f"DELETE FROM {table} WHERE {where_clause};"
 
             elif choice == '4':
                 query = input("Enter your SQL query: ").strip()
-                cursor.execute(query)
+                mycursor.execute(query)
                 if query.lower().startswith("select"):
-                    rows = cursor.fetchall()
-                    col_names = [desc[0] for desc in cursor.description]
+                    rows = mycursor.fetchall()
+                    col_names = [desc[0] for desc in mycursor.description]
                     print("\nResults:")
                     print(col_names)
                     for row in rows:
@@ -503,15 +503,15 @@ def interactive_query_interface(
                 print("Invalid option.")
                 continue
 
-            cursor.execute(query)
-            conn.commit()
+            mycursor.execute(query)
+            mydbase.commit()
             print("Query executed successfully.\n")
 
         except Exception as err:
             print(f"Error: {err}")
 
-    cursor.close()
-    conn.close()
+    mycursor.close()
+    mydbase.close()
 
 
 def main():
