@@ -1,0 +1,11 @@
+StudentID,StudentName,CourseIDs,CourseNames,DepartmentID,DepartmentName
+1,Alice,"C101,C102","Math,Physics",D1,Science
+2,Bob,"C103","Chemistry",D1,Science
+3,Charlie,"C104,C105","English,History",D2,Arts
+4,Diana,"C106","Philosophy",D2,Arts
+5,Eve,"C107,C108","Biology,Math",D1,Science
+6,Frank,"C109","Geography",D3,Humanities
+7,Grace,"C110,C111","Economics,Math",D3,Humanities
+8,Hank,"C112","History",D2,Arts
+9,Ivy,"C113","Physics",D1,Science
+10,John,"C114,C115","Philosophy,Math",D2,Arts

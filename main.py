@@ -515,10 +515,10 @@ def interactive_query_interface(
 
 
 def main():
-    file_path = '/Users/ianhill/Desktop/cmps664/python_code/database_normalization_tool/retail_orders.csv'
+    file_path = '/Users/ianhill/Desktop/cmps664/python_code/input.txt'
     dataframe = showcase_csv_format(file_path)
     attributes = dataframe.columns
-
+    '''
     # func_deps, primary_keys = get_fds_primarykeys()
     primary_keys = ['OrderID', 'ProductID']
 
@@ -533,6 +533,9 @@ def main():
         (['OrderID', 'ProductID'], 'Quantity'),
         (['OrderID', 'ProductID'], 'Total')
     ]
+    '''
+    
+
     print("Primary Keys: ", primary_keys)
     print("Functional Dependencies: \n", func_deps)
     na = input("\nContinue to computing closure: \n")

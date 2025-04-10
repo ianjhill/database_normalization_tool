@@ -1,0 +1,4 @@
+StudentID → StudentName, CourseIDs, CourseNames, DepartmentID, DepartmentName
+StudentName → StudentID, CourseIDs, CourseNames, DepartmentID, DepartmentName
+DepartmentID → DepartmentName
+CourseID → CourseName, DepartmentID, DepartmentName
