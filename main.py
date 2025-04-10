@@ -186,7 +186,7 @@ def check_2NF(df, fds, primary_key):
     for lhs, rhs in partial_deps:
         print(f"  - {list(lhs)} → {rhs}")
 
-    # Group by LHS to reduce duplicate tables
+    # Group by LHS to eliminate duplicate tables
     lhs_to_rhs = defaultdict(set)
     for lhs, rhs in partial_deps:
         lhs_to_rhs[lhs].add(rhs)
@@ -507,12 +507,11 @@ def interactive_query_interface(
             conn.commit()
             print("Query executed successfully.\n")
 
-        except Exception as e:
-            print(f"Error: {e}")
+        except Exception as err:
+            print(f"Error: {err}")
 
     cursor.close()
     conn.close()
-    print("Disconnected.")
 
 
 def main():
@@ -534,33 +533,43 @@ def main():
         (['OrderID', 'ProductID'], 'Quantity'),
         (['OrderID', 'ProductID'], 'Total')
     ]
-
+    print("Primary Keys: ", primary_keys)
+    print("Functional Dependencies: \n", func_deps)
+    na = input("\nContinue to computing closure: \n")
     closure = compute_closure(attributes, func_deps)
     print("Dataframe Closure:\n", closure)
 
+    na = input("\nContinue to detect dependencies: \n")
     verify_fds(dataframe, func_deps)
     detect_partial_dependencies(func_deps, primary_keys)
     detect_transitive_dependencies(func_deps, primary_keys)
+
+    na = input("\nContinue to suggest candidate keys: \n")
     suggest_candidate_keys(dataframe, func_deps)
 
+    na = input("\nContinue to check 1NF: \n")
     """Check that table is in 1NF"""
     table_in_1NF = check_1NF(dataframe)
 
+    na = input("\nContinue to check 2NF:")
     """Check for and resolve 2NF"""
     tables_in_2NF = check_2NF(table_in_1NF, func_deps, primary_keys)
 
+    na = input("\nContinue to check 3NF: \n")
     """Checking and resolving 3NF"""
     tables_3NF = []
     for table in tables_in_2NF:
         result = check_3NF(table, func_deps, primary_keys)
         tables_3NF.extend(result)
 
+    na = input("\nContinue to check BCNF: \n")
     """Check and resolving BCNF"""
     tables_BCNF = []
     for table in tables_3NF:
         filtered_fds = [(lhs, rhs) for lhs, rhs in func_deps if set(lhs + [rhs]).issubset(set(table.columns))]
         tables_BCNF.extend(resolve_bcnf(table, filtered_fds))
 
+    na = input("\nContinue to create normalized tables: \n")
     # Generate SQL scripts for generating the tables
     table_names = []
     print("\nHere are you final tables.")
@@ -588,6 +597,7 @@ def main():
         password='Ijh092499!',
         database='project_1_db'
     )
+    print("\nThank you for using the Database Normalization Tool.")
 
 
 if __name__ == "__main__":

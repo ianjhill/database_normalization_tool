@@ -1,7 +1,7 @@
 # database_normalization_tool
 This Python-based project provides a complete pipeline for importing CSV data, identifying functional dependencies, performing normalization, generating SQL scripts, and building an interactive database interface.
 
-# 📊 CSV Normalization and Database Tool
+# CSV Normalization and Database Tool
 
 This project is a Python-based tool that guides users through the process of:
 - Importing CSV data
@@ -57,8 +57,8 @@ This project is a Python-based tool that guides users through the process of:
 
 1. **Clone the repository**
    ```bash
-  - git clone https://github.com/your-username/csv-normalization-tool.git
-  - cd csv-normalization-tool
+  - git clone https://github.com/ianjhill/database_normalization_tool.git
+  - cd database-normalization-tool
 2. # Create a virtual environment
   - python -m venv venv
 
