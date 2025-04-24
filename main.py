@@ -13,6 +13,7 @@ def showcase_csv_format(file_path):
     """
     # file_path = input("Please enter the file name: ")
     # CHANGE TO file_path
+
     df = pd.read_csv(file_path)
 
     # Print out relevant information
@@ -35,17 +36,29 @@ def get_fds_primarykeys():
     Asks the user for primary keys and functional dependencies
     of the dataset and returns them.
     """
+    file_path = input("Please enter the file path for the functional dependencies: ")
     func_deps = []
-    fds = input("Please enter the functional dependencies (separated by comma) (A->B,C->D)").split(',')
+    with open(file_path, 'r') as file:
+        for line in file:
+            line = line.strip()
+            if '→' not in line:
+                continue
 
-    # Split functional dependencies into dependent and independent
-    for fd in fds:
+            lhs_str, rhs_str = line.split('→')
+            lhs = [attr.strip() for attr in lhs_str.split(',') if attr.strip()]
+            rhs = [attr.strip() for attr in rhs_str.split(',') if attr.strip()]
+
+            for attr in rhs:
+                func_deps.append((lhs, attr))
+
+    for fd in func_deps:
         lhs, rhs = fd.split('->')
         func_deps.append(([lhs.strip()], rhs.strip()))
+
     primary_keys = input("Please enter the primary keys (separated by comma): ").split(',')
 
-    # Return formatted functional dependencies and primary keys from user
-    return fds, primary_keys
+    # Return
+    return func_deps, primary_keys
 
 
 def compute_closure(attributes, fds):
@@ -151,6 +164,7 @@ def check_1NF(df):
             df[col] = df[col].astype(str).str.split(pattern).str[0].str.strip()
 
     print("Already in 1NF (No multi-valued attributes).")
+    print(df)
     # Returns the decomposed dataframe
     return df
 
@@ -383,7 +397,7 @@ def connect_and_execute_mysql_script(
         user=user,
         password=password
     )
-    mycursor = mydbase.mycursor()
+    mycursor = mydbase.cursor()
 
     # Create new database
     mycursor.execute(f"DROP DATABASE IF EXISTS {database_name}")
@@ -515,14 +529,14 @@ def interactive_query_interface(
 
 
 def main():
-    file_path = '/Users/ianhill/Desktop/cmps664/python_code/input.txt'
+    file_path = '/Users/ianhill/Desktop/cmps664/python_code/database_normalization_tool/input.txt'
     dataframe = showcase_csv_format(file_path)
     attributes = dataframe.columns
-    '''
+    
     # func_deps, primary_keys = get_fds_primarykeys()
-    primary_keys = ['OrderID', 'ProductID']
-
-    func_deps = [
+    
+    primary_keys = ['StudentID', 'CourseIDs', 'DepartmentID']
+    '''func_deps = [
         (['CustomerID'], 'CustomerName'),
         (['CustomerID'], 'State'),
         (['CustomerID'], 'City'),
@@ -532,24 +546,36 @@ def main():
         (['OrderID'], 'ShippingMethod'),
         (['OrderID', 'ProductID'], 'Quantity'),
         (['OrderID', 'ProductID'], 'Total')
-    ]
-    '''
+    ]'''
     
-
+    func_deps = [
+        (['StudentID'], ('StudentName', 'CourseIDs', 'CourseNames', 'DepartmentID', 'DepartmentName')),
+        (['StudentName'], ('StudentID', 'CourseIDs', 'CourseNames', 'DepartmentID', 'DepartmentName')),
+        (['DepartmentID'], ('DepartmentName',)),
+        (['CourseIDs'], ('CourseName', 'DepartmentID', 'DepartmentName'))
+    ]
+    # Format the input.txt func deps into the proper format for it to work
+    fixed_func_deps = []
+    for lhs, rhs_group in func_deps:
+        for rhs in rhs_group:
+            fixed_func_deps.append((lhs, rhs))
+    func_deps = fixed_func_deps
+    print(func_deps)
+    '''
     print("Primary Keys: ", primary_keys)
     print("Functional Dependencies: \n", func_deps)
     na = input("\nContinue to computing closure: \n")
     closure = compute_closure(attributes, func_deps)
     print("Dataframe Closure:\n", closure)
-
+    
     na = input("\nContinue to detect dependencies: \n")
     verify_fds(dataframe, func_deps)
     detect_partial_dependencies(func_deps, primary_keys)
     detect_transitive_dependencies(func_deps, primary_keys)
-
+    
     na = input("\nContinue to suggest candidate keys: \n")
     suggest_candidate_keys(dataframe, func_deps)
-
+    '''
     na = input("\nContinue to check 1NF: \n")
     """Check that table is in 1NF"""
     table_in_1NF = check_1NF(dataframe)
@@ -562,7 +588,8 @@ def main():
     """Checking and resolving 3NF"""
     tables_3NF = []
     for table in tables_in_2NF:
-        result = check_3NF(table, func_deps, primary_keys)
+        filtered_fds = filter_fds_for_table(func_deps, table.columns)
+        result = check_3NF(table, filtered_fds, primary_keys)
         tables_3NF.extend(result)
 
     na = input("\nContinue to check BCNF: \n")
@@ -590,7 +617,7 @@ def main():
         host='localhost',
         user='root',
         password='Ijh092499!',
-        database_name='project_1_db',
+        database_name='midterm_project',
         tables=tables_BCNF,
         table_names=table_names
     )
@@ -598,7 +625,7 @@ def main():
         host='localhost',
         user='root',
         password='Ijh092499!',
-        database='project_1_db'
+        database='midterm_project'
     )
     print("\nThank you for using the Database Normalization Tool.")
 
